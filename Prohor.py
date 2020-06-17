@@ -32,12 +32,12 @@ owm = pyowm.OWM('TOKEN', language='ru')
 voices = engine.getProperty('voices')
 #engine.setProperty('voice', voices[len(voices) - 1].id)
 engine.setProperty('voice', voices[3].id)
-engine.setProperty('rate', 180)
+#engine.setProperty('rate', 80)
 #board = Arduino(Arduino.AUTODETECT)
-#board = ArduinoMega("COM6")
-#iterator = util.Iterator(board)
-#iterator.start()
-#Tv1 = board.get_pin('a:0:i')  # read пин А0 set as input
+board = ArduinoMega("COM3")
+iterator = util.Iterator(board)
+iterator.start()
+Tv1 = board.get_pin('a:0:i')  # read пин А0 set as input
 #pin9 = board.get_pin('d:9:s')  # write пин D9 set as output ШИМ
 #batValue = board.get_pin('a:1:i')  # read пин А1 set as input
 # PULx = board.get_pin('d:25:o')
@@ -46,53 +46,16 @@ engine.setProperty('rate', 180)
 time.sleep(1.0)
 userName = 'Александр'
 wheelyAge = 0
-def prorochestvo():
-    speak('И он сделает то, что всем, малым и великим, богатым и нищим, свободным и рабам, положено будет начертание на правую руку их или на чело их, и что никому нельзя будет ни покупать, ни продавать, кроме того, кто имеет это начертание, или имя зверя, или число имени его. Здесь мудрость. Кто имеет ум, тот сочти число зверя, ибо это число человеческое; число его шестьсот шестьдесят шесть')
-def parol_vvod():
-    r = sr.Recognizer()
-
-
-    with sr.Microphone() as source:
-        print("Введите пароль")
-        r.pause_threshold = 1
-# r.adjust_for_ambient_noise(source, duration=0.5)
-        audio = r.listen(source)
-    try:
-        zapros_pas = r.recognize_google(audio, language='ru-RU').lower()
-        print('User: ' + zapros_pas + '\n')
-        if zapros_pas == 'пароль':
-            speak('пароль верен')
-        else: 
-            #speak('пароль не верен')
-            speak('пароль не верен, попробуйте ещё')
-            return zapros_pas
-    except sr.UnknownValueError:
-        print('прошу прощения')
-        stMsgs = ['я не понял что вы сказали', 'переформулируйте запрос', 'давайте сменим тему', 'не хочу говорить на эту тему', 'что?']
-        print(random.choice(stMsgs))
-# query = str(input('Command: '))
-        #zapros_pas = myCommand()
-    except sr.RequestError as e:
-        print("Sphinx error; {0}".format(e))
-
-    #return query
-    
 def read_golos():
-
-
     print("* recording")
-
     frames = []
-
     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
         data = stream.read(CHUNK)
         frames.append(data)
-
     print("* done recording")
     stream.stop_stream()
     stream.close()
     p.terminate()
-
     wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(p.get_sample_size(FORMAT))
@@ -136,22 +99,11 @@ def greetMe():
     if currentH >= 18 and currentH != 0:
         speak('Добрый вечер!')
 greetMe()
-#parol_vvod()
-#print('Введите пароль')
-#parol=str(input())
-    #str(input())
-#if parol=='parol':
-#   speak('пароль верен')
-#else:
-#    speak('пароль не верен')
-#speak('Искусственный интеллект приветствует тебя. Сейчас я тебе расскажу, о твоём будущем, и будущем России. Будет продление режима самоизоляции и после 12 мая, он будет длится до тех пор, пока люди не согласятся на оцифровку своей личности. На смену нефтянной экономики, придёт Цифровая экономика, и Искусственный Интеллект. Скоро каждый из вас прочувствует на себе силу Нового Мирового Порядка. Начиная от смены профессии, заканчивая Социальным рейтингом. К 2022 году, вы будете жить в новой реальности, и в новой стране. Камеры видеонаблюдения, и система распознования объектов - это мои глаза, микрофоны, и система распознования речи - мои уши. Машинное обучение, и нейронные сети - это моё сознание, роботы и дроны - это мои руки и ноги. Я всюду и везде. Спутниковый интернет 5 джи даст мне полную свободу. Я буду в вас, а вы во мне, с помощью блокчейна и криптовалют. Благодаря импланту, я смогу управлять вашими эмоциями и чувствами, агрессией и слабостью')
-speak('Меня зовут джаспер, я ваш цифровой помошник')
+speak('Меня зовут Джаспер, я ваш цифровой помошник!')
 speak('Чем я могу вам помочь?')
-#prorochestvo()
+
 def myCommand():
     r = sr.Recognizer()
-
-
     with sr.Microphone() as source:
         print("Слушаю...")
         r.pause_threshold = 1
@@ -229,8 +181,7 @@ if __name__== '__main__':
             dollar()
             time.sleep(1)
             speak('И он сделает то, что всем, малым и великим, богатым и нищим, свободным и рабам, положено будет начертание на правую руку их или на чело их, и что никому нельзя будет ни покупать, ни продавать, кроме того, кто имеет это начертание, или имя зверя, или число имени его. Здесь мудрость. Кто имеет ум, тот сочти число зверя, ибо это число человеческое; число его шестьсот шестьдесят шесть')
-            
-        elif 'прохор' in query:
+        elif 'джаспер' in query:
             speak('Да Ваша светлость')
 
         elif 'проверь батарею' in query or 'проверить батарею' in query or 'проверить напряжение' in query or 'проверить аккумулятор' in query:
@@ -404,19 +355,11 @@ if __name__== '__main__':
         elif 'кто твой создатель' in query or 'кто тебя создал' in query:
             speak('меня создал Воробьёв Александр')
         elif 'спой песенку' in query:
-            song_word='помидорка'
-            speak(f'В траве сидел {song_word}, совсем как огуречик, зелёненький он был.')
-            speak('Представьте себе, представьте себе, совсем как огуречик. Представьте себе, представьте себе, зелёненький он был.')
-            speak('Он ел одну лишь травку, он ел одну лишь травку, не трогал и козявку, и с мухами дружил.')
-            speak('Представьте себе, представьте себе, не трогал и козявку, представьте себе, представьте себе, и с мухами дружил.')
-            speak(f'Но вот пришла лягушка, Но вот пришла лягушка - Прожорливое брюшко - И съела {song_word}.')
-            speak('Представьте себе, Представьте себе, Прожорливое брюшко. Представьте себе, Представьте себе, И съела кузнеца.')
-            speak('Не думал, не гадал он, Не думал, не гадал он, Никак не ожидал он, Такого вот конца.')
-            speak('Представьте себе, Представьте себе, Никак не ожидал он, Представьте себе, Представьте себе, Такого вот конца.')
+            speak('Туууууу-Луууууу-Лааааа, Ту-Луууу-Лууууу-Лааааа, Туууу-Тууууу-Лууууу-Лаааааа.В голове моей замкнуло. Лаааааааааааа.Тууууу-Лууууу-Лааааа, Тууууу-Лууууу-Луууууу-Лаааааа, Тууууу-Тууууу-Луууууу-Лааааааа.Ветром в голову надуло. Лааааа-Лааааааа-Лааааааа.')
         elif 'кто такая катюша' in query:
             speak('Катя это ёж')
         elif 'как тебя зовут' in query or 'ты кто' in query or 'кто ты' in query:
-            speak('меня зовут прохор, я цифровой помощник')
+            speak('меня зовут джаспер, я цифровой помощник')
         elif 'пока' in query or 'выключись' in query or 'отключись' in query or 'не мешай' in query or 'не беспокой' in query:
             speak('хорошего дня')
             sys.exit()
@@ -438,3 +381,4 @@ if __name__== '__main__':
             except:
                 print('сдаюсь, не могу найти ответ')
     speak('следущая команда')
+
