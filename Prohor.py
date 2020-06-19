@@ -17,7 +17,7 @@ import pyowm
 from pycbrf.toolbox import ExchangeRates
 #rates = ExchangeRates('2020-04-17')
 #from pycbrf import ExchangeRates, Banks
-rates = ExchangeRates('2020-04-17', locale_en=True)
+#rates = ExchangeRates(now.strftime("%d-%m-%Y"), locale_en=True)
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
@@ -65,8 +65,16 @@ def read_golos():
     wf.writeframes(b''.join(frames))
     wf.close()
 def dollar():
+    now = datetime.datetime.now()
+    rates = ExchangeRates(str(now.strftime("%Y-%m-%d")), locale_en=True)
     kurs=int(rates['USD'].rate)
-    speak(str(kurs)+ ' рубля' )
+    if kurs%10==1:
+        rubl='рубль'
+    elif kurs%10==2 or kurs%10==3 or kurs%10==4:
+        rubl='рубля'
+    else:
+        rubl='рублей'
+    speak(f'{kurs} {rubl}' )
 def what_temp():
     x=(Tv1.read()*1000)+10
     x2=x*5/1024
@@ -230,6 +238,7 @@ if __name__== '__main__':
             speak("какой город вас интересует? ")
             try:
                 city = myCommand()
+                owm = pyowm.OWM('a99967bc9ee70d5b4bd387902982f400', language = "RU")
                 observation = owm.weather_at_place(city)
                 w = observation.get_weather()
                 temperature = w.get_temperature('celsius')['temp']
