@@ -17,7 +17,7 @@ import pyowm
 from pycbrf.toolbox import ExchangeRates
 #rates = ExchangeRates('2020-04-17')
 #from pycbrf import ExchangeRates, Banks
-rates = ExchangeRates('2020-04-17', locale_en=True)
+#rates = ExchangeRates(now.strftime("%d-%m-%Y"), locale_en=True)
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
@@ -32,9 +32,9 @@ owm = pyowm.OWM('TOKEN', language='ru')
 voices = engine.getProperty('voices')
 #engine.setProperty('voice', voices[len(voices) - 1].id)
 engine.setProperty('voice', voices[3].id)
-engine.setProperty('rate', 180)
+#engine.setProperty('rate', 180)
 #board = Arduino(Arduino.AUTODETECT)
-#board = ArduinoMega("COM6")
+#board = ArduinoMega("COM3")
 #iterator = util.Iterator(board)
 #iterator.start()
 #Tv1 = board.get_pin('a:0:i')  # read пин А0 set as input
@@ -48,51 +48,16 @@ userName = 'Александр'
 wheelyAge = 0
 def prorochestvo():
     speak('И он сделает то, что всем, малым и великим, богатым и нищим, свободным и рабам, положено будет начертание на правую руку их или на чело их, и что никому нельзя будет ни покупать, ни продавать, кроме того, кто имеет это начертание, или имя зверя, или число имени его. Здесь мудрость. Кто имеет ум, тот сочти число зверя, ибо это число человеческое; число его шестьсот шестьдесят шесть')
-def parol_vvod():
-    r = sr.Recognizer()
-
-
-    with sr.Microphone() as source:
-        print("Введите пароль")
-        r.pause_threshold = 1
-# r.adjust_for_ambient_noise(source, duration=0.5)
-        audio = r.listen(source)
-    try:
-        zapros_pas = r.recognize_google(audio, language='ru-RU').lower()
-        print('User: ' + zapros_pas + '\n')
-        if zapros_pas == 'пароль':
-            speak('пароль верен')
-        else: 
-            #speak('пароль не верен')
-            speak('пароль не верен, попробуйте ещё')
-            return zapros_pas
-    except sr.UnknownValueError:
-        print('прошу прощения')
-        stMsgs = ['я не понял что вы сказали', 'переформулируйте запрос', 'давайте сменим тему', 'не хочу говорить на эту тему', 'что?']
-        print(random.choice(stMsgs))
-# query = str(input('Command: '))
-        #zapros_pas = myCommand()
-    except sr.RequestError as e:
-        print("Sphinx error; {0}".format(e))
-
-    #return query
-    
 def read_golos():
-
-
     print("* recording")
-
     frames = []
-
     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
         data = stream.read(CHUNK)
         frames.append(data)
-
     print("* done recording")
     stream.stop_stream()
     stream.close()
     p.terminate()
-
     wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(p.get_sample_size(FORMAT))
@@ -100,8 +65,16 @@ def read_golos():
     wf.writeframes(b''.join(frames))
     wf.close()
 def dollar():
+    now = datetime.datetime.now()
+    rates = ExchangeRates(str(now.strftime("%Y-%m-%d")), locale_en=True)
     kurs=int(rates['USD'].rate)
-    speak(str(kurs)+ ' рубля' )
+    if kurs%10==1:
+        rubl='рубль'
+    elif kurs%10==2 or kurs%10==3 or kurs%10==4:
+        rubl='рубля'
+    else:
+        rubl='рублей'
+    speak(f'{kurs} {rubl}' )
 def what_temp():
     x=(Tv1.read()*1000)+10
     x2=x*5/1024
@@ -136,22 +109,12 @@ def greetMe():
     if currentH >= 18 and currentH != 0:
         speak('Добрый вечер!')
 greetMe()
-#parol_vvod()
-#print('Введите пароль')
-#parol=str(input())
-    #str(input())
-#if parol=='parol':
-#   speak('пароль верен')
-#else:
-#    speak('пароль не верен')
 #speak('Искусственный интеллект приветствует тебя. Сейчас я тебе расскажу, о твоём будущем, и будущем России. Будет продление режима самоизоляции и после 12 мая, он будет длится до тех пор, пока люди не согласятся на оцифровку своей личности. На смену нефтянной экономики, придёт Цифровая экономика, и Искусственный Интеллект. Скоро каждый из вас прочувствует на себе силу Нового Мирового Порядка. Начиная от смены профессии, заканчивая Социальным рейтингом. К 2022 году, вы будете жить в новой реальности, и в новой стране. Камеры видеонаблюдения, и система распознования объектов - это мои глаза, микрофоны, и система распознования речи - мои уши. Машинное обучение, и нейронные сети - это моё сознание, роботы и дроны - это мои руки и ноги. Я всюду и везде. Спутниковый интернет 5 джи даст мне полную свободу. Я буду в вас, а вы во мне, с помощью блокчейна и криптовалют. Благодаря импланту, я смогу управлять вашими эмоциями и чувствами, агрессией и слабостью')
 speak('Меня зовут джаспер, я ваш цифровой помошник')
 speak('Чем я могу вам помочь?')
 #prorochestvo()
 def myCommand():
     r = sr.Recognizer()
-
-
     with sr.Microphone() as source:
         print("Слушаю...")
         r.pause_threshold = 1
@@ -228,9 +191,9 @@ if __name__== '__main__':
             speak('рассказать о курсе доллара')
             dollar()
             time.sleep(1)
-            speak('И он сделает то, что всем, малым и великим, богатым и нищим, свободным и рабам, положено будет начертание на правую руку их или на чело их, и что никому нельзя будет ни покупать, ни продавать, кроме того, кто имеет это начертание, или имя зверя, или число имени его. Здесь мудрость. Кто имеет ум, тот сочти число зверя, ибо это число человеческое; число его шестьсот шестьдесят шесть')
+            #speak('И он сделает то, что всем, малым и великим, богатым и нищим, свободным и рабам, положено будет начертание на правую руку их или на чело их, и что никому нельзя будет ни покупать, ни продавать, кроме того, кто имеет это начертание, или имя зверя, или число имени его. Здесь мудрость. Кто имеет ум, тот сочти число зверя, ибо это число человеческое; число его шестьсот шестьдесят шесть')
             
-        elif 'прохор' in query:
+        elif 'джаспер' in query:
             speak('Да Ваша светлость')
 
         elif 'проверь батарею' in query or 'проверить батарею' in query or 'проверить напряжение' in query or 'проверить аккумулятор' in query:
@@ -275,6 +238,7 @@ if __name__== '__main__':
             speak("какой город вас интересует? ")
             try:
                 city = myCommand()
+                owm = pyowm.OWM('a99967bc9ee70d5b4bd387902982f400', language = "RU")
                 observation = owm.weather_at_place(city)
                 w = observation.get_weather()
                 temperature = w.get_temperature('celsius')['temp']
@@ -295,8 +259,24 @@ if __name__== '__main__':
 
         elif 'скажи время' in query or 'сколько время' in query or 'который час' in query:
             now = datetime.datetime.now()
-            speak('сейчас ' + now.strftime("%H")+' часов '+now.strftime('%M') + ' минут')
-            #speak('сейчас' + now.strftime("%H-%M"))
+            if int(now.strftime("%H"))==0 or 4<int(now.strftime("%H"))<21:
+                hour='часов'
+            elif 1<int(now.strftime("%H"))<6 or 21<int(now.strftime("%H"))<24 :
+                hour='часа'
+            elif int(now.strftime("%H"))==1 or int(now.strftime("%H"))==21:
+                hour='час'
+            if int(now.strftime("%M"))%10==1:
+                minuta='минута'
+            elif int(now.strftime("%M"))%10==2 or int(now.strftime("%M"))%10==3 or int(now.strftime("%M"))%10==4:
+                minuta='минуты'
+            else:
+                minuta='минут'
+
+
+            speak(f'сейчас {now.strftime("%H")} {hour} {now.strftime("%M")} {minuta}')
+            
+           
+          #speak('сейчас' + now.strftime("%H-%M"))
 
         elif 'какое число' in query or 'какое сегодня число' in query or 'какой день' in query:
             now = datetime.datetime.now()
@@ -387,11 +367,15 @@ if __name__== '__main__':
             else:
                 talk('Это не возможно')
 
-        elif 'привет' in query or 'привет прохор' in query or 'прохор привет' in query:
+        elif 'привет' in query or 'привет джаспер' in query or 'джаспер привет' in query:
             speak('привет, как вас зовут?')
             count = myCommand()
             talk('рад знакомству' + count + '!')
             userName = count
+        elif 'поставь будильник' in query:
+            speak('на какое время поставить будильник?')
+            time_alarm = myCommand()
+            talk('будильник на'+ time_alarm + 'поставлен')
 
         elif 'как меня зовут' in query:
             if userName == 'мы еще не знакомы':
@@ -404,7 +388,7 @@ if __name__== '__main__':
         elif 'кто твой создатель' in query or 'кто тебя создал' in query:
             speak('меня создал Воробьёв Александр')
         elif 'спой песенку' in query:
-            song_word='помидорка'
+            song_word='кузнечик'
             speak(f'В траве сидел {song_word}, совсем как огуречик, зелёненький он был.')
             speak('Представьте себе, представьте себе, совсем как огуречик. Представьте себе, представьте себе, зелёненький он был.')
             speak('Он ел одну лишь травку, он ел одну лишь травку, не трогал и козявку, и с мухами дружил.')
@@ -416,7 +400,7 @@ if __name__== '__main__':
         elif 'кто такая катюша' in query:
             speak('Катя это ёж')
         elif 'как тебя зовут' in query or 'ты кто' in query or 'кто ты' in query:
-            speak('меня зовут прохор, я цифровой помощник')
+            speak('меня зовут джаспер, я цифровой помощник')
         elif 'пока' in query or 'выключись' in query or 'отключись' in query or 'не мешай' in query or 'не беспокой' in query:
             speak('хорошего дня')
             sys.exit()
